@@ -1,0 +1,27 @@
+# =============================================
+# .htaccess — Konfigurasi Apache
+# =============================================
+
+# 1. Paksa HTTPS
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# 2. Izinkan CORS untuk folder backend
+<IfModule mod_headers.c>
+    <FilesMatch "\.php$">
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+        Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+    </FilesMatch>
+</IfModule>
+
+# 3. Lindungi file PHP sensitif dari akses langsung luar backend
+<Files "koneksi.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
+<Files "auth.php">
+    Order Deny,Allow
+    Deny from all
+</Files>

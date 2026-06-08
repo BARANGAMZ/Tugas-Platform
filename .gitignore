@@ -1,0 +1,20 @@
+# ── File sensitif yang TIDAK boleh masuk GitHub ──
+# Jangan pernah commit koneksi database!
+backend/koneksi.php
+
+# ── Script setup sekali pakai ──
+backend/seed_user.php
+
+# ── File sistem OS ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editor ──
+.vscode/
+.idea/
+*.code-workspace
+
+# ── Dependency & log ──
+node_modules/
+*.log

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TokoKu — Masuk atau Daftar</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#111827">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="TokoKu">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --black:   #111827;
+            --gray-1:  #374151;
+            --gray-2:  #6b7280;
+            --gray-3:  #d1d5db;
+            --gray-4:  #f3f4f6;
+            --white:   #ffffff;
+            --red:     #dc2626;
+            --green:   #16a34a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-4);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ── Brand ── */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        .brand-icon {
+            width: 38px; height: 38px;
+            background: var(--black);
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 19px;
+        }
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--black);
+            letter-spacing: -0.4px;
+        }
+
+        /* ── Card ── */
+        .card {
+            background: var(--white);
+            border-radius: 14px;
+            border: 1px solid var(--gray-3);
+            width: 100%;
+            max-width: 390px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+
+        /* ── Tabs ── */
+        .tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-bottom: 1px solid var(--gray-3);
+            background: var(--gray-4);
+        }
+        .tab-btn {
+            padding: 14px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-2);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .tab-btn.active {
+            background: var(--white);
+            color: var(--black);
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 24px; right: 24px;
+            height: 2px;
+            background: var(--black);
+            border-radius: 2px 2px 0 0;
+        }
+
+        /* ── Panel ── */
+        .panel { display: none; padding: 26px 28px; }
+        .panel.active { display: block; }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--black);
+            letter-spacing: -0.3px;
+            margin-bottom: 4px;
+        }
+        .panel-sub {
+            font-size: 13px;
+            color: var(--gray-2);
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        /* ── Field ── */
+        .field { margin-bottom: 14px; }
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-1);
+            margin-bottom: 5px;
+        }
+        .field input {
+            width: 100%;
+            height: 40px;
+            border: 1.5px solid var(--gray-3);
+            border-radius: 9px;
+            padding: 0 13px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: var(--black);
+            background: var(--white);
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .field input:focus {
+            border-color: var(--black);
+            box-shadow: 0 0 0 3px rgba(17,24,39,0.08);
+        }
+        .field input.err { border-color: var(--red); }
+        .field .hint {
+            font-size: 11px;
+            color: var(--gray-2);
+            margin-top: 4px;
+        }
+
+        /* ── Submit ── */
+        .btn-submit {
+            width: 100%;
+            height: 42px;
+            background: var(--black);
+            color: var(--white);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            border: none;
+            border-radius: 9px;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: background 0.15s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-submit:hover { background: var(--gray-1); }
+        .btn-submit:active { transform: scale(0.99); }
+        .btn-submit:disabled { background: var(--gray-3); cursor: not-allowed; transform: none; }
+
+        .spinner {
+            width: 15px; height: 15px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Alert ── */
+        .alert {
+            display: none;
+            padding: 10px 13px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-top: 12px;
+        }
+        .alert.err  { background: #fef2f2; border: 1px solid #fecaca; color: var(--red); display: block; }
+        .alert.ok   { background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--green); display: block; }
+
+        /* ── Switch link ── */
+        .switch-row {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--gray-2);
+        }
+        .switch-row button {
+            background: none; border: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--black);
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+        .switch-row button:hover { color: var(--gray-1); }
+
+        /* ── Footer ── */
+        .card-foot {
+            padding: 13px 28px;
+            border-top: 1px solid var(--gray-4);
+            text-align: center;
+            font-size: 11px;
+            color: var(--gray-2);
+        }
+
+        .page-foot {
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--gray-2);
+        }
+    </style>
+</head>
+<body>
+
+<div class="brand">
+    <div class="brand-icon">🏪</div>
+    <span class="brand-name">TokoKu</span>
+</div>
+
+<div class="card">
+
+    <!-- TAB HEADER -->
+    <div class="tabs" role="tablist">
+        <button class="tab-btn active" id="tab-login" onclick="gotoTab('login')">Masuk</button>
+        <button class="tab-btn"        id="tab-daftar" onclick="gotoTab('daftar')">Daftar</button>
+    </div>
+
+    <!-- PANEL: LOGIN -->
+    <div class="panel active" id="panel-login">
+        <h1 class="panel-title">Selamat datang kembali</h1>
+        <p class="panel-sub">Masukkan akun Anda untuk mulai mengelola inventori.</p>
+
+        <form id="formLogin" novalidate>
+            <div class="field">
+                <label for="l-username">Username</label>
+                <input type="text" id="l-username" placeholder="Contoh: budisantoso" autocomplete="username" required>
+            </div>
+            <div class="field">
+                <label for="l-password">Password</label>
+                <input type="password" id="l-password" placeholder="Password Anda" autocomplete="current-password" required>
+            </div>
+            <button type="submit" class="btn-submit" id="btn-login">Masuk</button>
+        </form>
+
+        <div id="login-alert" class="alert"></div>
+
+        <div class="switch-row">
+            Belum punya akun?
+            <button onclick="gotoTab('daftar')">Daftar sekarang</button>
+        </div>
+    </div>
+
+    <!-- PANEL: DAFTAR -->
+    <div class="panel" id="panel-daftar">
+        <h1 class="panel-title">Buat akun baru</h1>
+        <p class="panel-sub">Gratis. Data barang Anda tersimpan terpisah dari pengguna lain.</p>
+
+        <form id="formDaftar" novalidate>
+            <div class="field">
+                <label for="d-username">Username</label>
+                <input type="text" id="d-username" placeholder="Minimal 3 karakter" autocomplete="username" required>
+                <p class="hint">Gunakan huruf kecil dan angka, tanpa spasi.</p>
+            </div>
+            <div class="field">
+                <label for="d-password">Password</label>
+                <input type="password" id="d-password" placeholder="Minimal 6 karakter" autocomplete="new-password" required>
+            </div>
+            <div class="field">
+                <label for="d-konfirmasi">Konfirmasi Password</label>
+                <input type="password" id="d-konfirmasi" placeholder="Ulangi password Anda" autocomplete="new-password" required>
+            </div>
+            <button type="submit" class="btn-submit" id="btn-daftar">Buat Akun</button>
+        </form>
+
+        <div id="daftar-alert" class="alert"></div>
+
+        <div class="switch-row">
+            Sudah punya akun?
+            <button onclick="gotoTab('login')">Masuk di sini</button>
+        </div>
+    </div>
+
+    <div class="card-foot">TokoKu &copy; 2025 &mdash; Manajemen Inventori</div>
+</div>
+
+<p class="page-foot">Setiap akun memiliki data inventori yang terpisah.</p>
+
+<script>
+    const BACKEND = '../backend';
+
+    // Redirect jika sudah login
+    if (localStorage.getItem('token')) window.location.replace('index.html');
+
+    // ── Tab switcher ──────────────────────────────────────────
+    function gotoTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
+        document.getElementById('panel-' + tab).classList.add('active');
+        // Bersihkan alert
+        document.querySelectorAll('.alert').forEach(a => { a.className = 'alert'; a.textContent = ''; });
+    }
+
+    // ── Helper: tampilkan alert ──────────────────────────────
+    function showAlert(id, msg, type) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.className = 'alert ' + type;
+    }
+
+    function setLoading(btnId, isLoading, label) {
+        const btn = document.getElementById(btnId);
+        btn.disabled = isLoading;
+        btn.innerHTML = isLoading ? '<span class="spinner"></span> Memproses...' : label;
+    }
+
+    // ── FORM LOGIN ────────────────────────────────────────────
+    document.getElementById('formLogin').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('l-username').value.trim();
+        const password = document.getElementById('l-password').value;
+
+        if (!username || !password) {
+            showAlert('login-alert', '⚠ Username dan password wajib diisi.', 'err');
+            return;
+        }
+
+        setLoading('btn-login', true, 'Masuk');
+        showAlert('login-alert', '', '');
+
+        try {
+            const fd = new FormData();
+            fd.append('username', username);
+            fd.append('password', password);
+
+            const res    = await fetch(`${BACKEND}/login.php`, { method: 'POST', body: fd });
+            const result = await res.json();
+
+            if (result.status === 'sukses' && result.token) {
+                localStorage.setItem('token', result.token);
+                localStorage.setItem('username', result.username);
+                showAlert('login-alert', '✓ Login berhasil! Mengalihkan...', 'ok');
+                setTimeout(() => window.location.replace('index.html'), 700);
+            } else {
+                showAlert('login-alert', '⚠ ' + (result.pesan || 'Login gagal.'), 'err');
+                setLoading('btn-login', false, 'Masuk');
+            }
+        } catch {
+            showAlert('login-alert', '⚠ Tidak dapat terhubung ke server.', 'err');
+            setLoading('btn-login', false, 'Masuk');
+        }
+    });
+
+    // ── FORM DAFTAR ───────────────────────────────────────────
+    document.getElementById('formDaftar').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username  = document.getElementById('d-username').value.trim();
+        const password  = document.getElementById('d-password').value;
+        const konfirm   = document.getElementById('d-konfirmasi').value;
+
+        // Reset border merah
+        ['d-username','d-password','d-konfirmasi'].forEach(id =>
+            document.getElementById(id).classList.remove('err')
+        );
+        showAlert('daftar-alert', '', '');
+
+        if (!username || !password || !konfirm) {
+            showAlert('daftar-alert', '⚠ Semua kolom wajib diisi.', 'err');
+            return;
+        }
+        if (username.length < 3) {
+            document.getElementById('d-username').classList.add('err');
+            showAlert('daftar-alert', '⚠ Username minimal 3 karakter.', 'err');
+            return;
+        }
+        if (password.length < 6) {
+            document.getElementById('d-password').classList.add('err');
+            showAlert('daftar-alert', '⚠ Password minimal 6 karakter.', 'err');
+            return;
+        }
+        if (password !== konfirm) {
+            document.getElementById('d-konfirmasi').classList.add('err');
+            showAlert('daftar-alert', '⚠ Konfirmasi password tidak cocok.', 'err');
+            return;
+        }
+
+        setLoading('btn-daftar', true, 'Buat Akun');
+
+        try {
+            const fd = new FormData();
+            fd.append('username', username);
+            fd.append('password', password);
+
+            const res    = await fetch(`${BACKEND}/register.php`, { method: 'POST', body: fd });
+            const result = await res.json();
+
+            if (result.status === 'sukses') {
+                showAlert('daftar-alert', '✓ ' + result.pesan, 'ok');
+                document.getElementById('formDaftar').reset();
+                setLoading('btn-daftar', false, 'Buat Akun');
+                // Pindah ke tab login setelah 1.5 detik
+                setTimeout(() => gotoTab('login'), 1500);
+            } else {
+                showAlert('daftar-alert', '⚠ ' + (result.pesan || 'Pendaftaran gagal.'), 'err');
+                setLoading('btn-daftar', false, 'Buat Akun');
+            }
+        } catch {
+            showAlert('daftar-alert', '⚠ Tidak dapat terhubung ke server.', 'err');
+            setLoading('btn-daftar', false, 'Buat Akun');
+        }
+    });
+
+    // ── Service Worker ────────────────────────────────────────
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+</script>
+</body>
+</html>
